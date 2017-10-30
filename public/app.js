@@ -83,4 +83,20 @@ $(document).ready(function(){
         });
       });
     });
+  $(document).on("click", ".saveBTN", function() {
+    var thisId = this.dataset.id;
+    $.ajax({
+    method: "POST",
+    url: "/articles/saved/" + thisId,
+    data: {
+      saved: true
+    }
+    })
+  // With that done
+    .done(function(data) {
+      // Log the response
+      location.reload();
+    });
+  });
+
 });

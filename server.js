@@ -110,7 +110,7 @@ app.get("/scrape", function(req, res) {
 });
 
 // Route for getting saving Articles from the db
-app.get("/saved", function(req, res) {
+app.get("/articles/saved", function(req, res) {
   db.Article.find({saved: true}, null, {sort: {created: -1}}, function(err, data) {
     if(data.length === 0) {
       res.render("placeholder", {message: "You have not saved any articles yet. Try to save some delicious news by simply clicking \"Save Article\"!"});
@@ -121,20 +121,15 @@ app.get("/saved", function(req, res) {
   });
 });
 
-app.post("/saved/:id", function(req, res) {
-  db.Article.findById(req.params.id, function(err, data) {
-    if (data.issaved) {
-      db.Article.findByIdAndUpdate(req.params.id, {$set: {saved: false, status: "Save Article"}}, {new: true}, function(err, data) {
-        res.redirect("/");
-      });
-    }
-    else {
-      db.Article.findByIdAndUpdate(req.params.id, {$set: {saved: true, status: "Saved"}}, {new: true}, function(err, data) {
-        res.redirect("/saved");
-      });
-    }
-  });
-});
+app.post("/articles/saved/:id", function(req, res) {
+   db.Article.findOneAndUpdate({ _id: req.params.id }, { saved: true })
+   .then(function(dbArticle) {
+       res.json(dbArticle);
+     })
+     .catch(function(err) {
+       res.json(err);
+     });
+ });
 
 // Route for grabbing a specific Article by id, populate it with it's note
 // app.get("/articles/:id", function(req, res) {
